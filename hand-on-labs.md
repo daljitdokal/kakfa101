@@ -67,3 +67,36 @@ When prompted, enter the following strings as written:
 
 Observe the messages as they’re being output in the consumer terminal window.
 
+## Hands On: Partitioning
+
+```
+confluent kafka topic list
+
+# In particular, make note of the num.partitions value, which is 6.
+confluent kafka topic describe poems
+
+# Produce data to the topics using the produce command and --parse-key flag and then enter the strings:
+confluent kafka topic produce poems_1 --parse-key # num.partitions value = 1
+
+	1:”All that is gold does not glitter”
+	2:"Not all who wander are lost"
+	3:"The old that is strong does not wither"
+	4:"Deep roots are not harmed by the frost"
+	5:"From the ashes a fire shall awaken"
+	6:"A light from the shadows shall spring"
+	7:"Renewed shall be blad that was broken"
+	8:"The crownless again shall be king"
+
+# num.partitions value = 4
+confluent kafka topic produce poems_4 --parse-key
+
+	1:”All that is gold does not glitter”
+	2:"Not all who wander are lost"
+	3:"The old that is strong does not wither"
+	4:"Deep roots are not harmed by the frost"
+	5:"From the ashes a fire shall awaken"
+	6:"A light from the shadows shall spring"
+	7:"Renewed shall be blad that was broken"
+	8:"The crownless again shall be king"
+```
+Using the Jump to offset field, explore the partitions of all three topics—poems, poems_1, and poems_4—to observe how the messages are distributed differently across these topics.
