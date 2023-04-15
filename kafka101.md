@@ -12,7 +12,7 @@ Since Kafka topics are logs, there is nothing inherently temporary about the dat
 
 The simplicity of the log and the immutability of the contents in it are key to Kafka’s success as a critical component in modern data infrastructure—but they are only the beginning.
 
-## Kafka Partitioning
+### Kafka Partitioning
 
 If a topic were constrained to live entirely on one machine, that would place a pretty radical limit on the ability of Apache Kafka to scale. It could manage many topics across many machines—Kafka is a distributed system, after all—but no one topic could ever get too big or aspire to accommodate too many reads and writes. Fortunately, Kafka does not leave us without options here: It gives us the ability to partition topics.
 
