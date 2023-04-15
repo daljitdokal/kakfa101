@@ -75,8 +75,11 @@ confluent kafka topic list
 # In particular, make note of the num.partitions value, which is 6.
 confluent kafka topic describe poems
 
+# num.partitions value = 1
+confluent kafka topic create --partitions 1 poems_1
+
 # Produce data to the topics using the produce command and --parse-key flag and then enter the strings:
-confluent kafka topic produce poems_1 --parse-key # num.partitions value = 1
+confluent kafka topic produce poems_1 --parse-key
 
 	1:”All that is gold does not glitter”
 	2:"Not all who wander are lost"
@@ -88,6 +91,9 @@ confluent kafka topic produce poems_1 --parse-key # num.partitions value = 1
 	8:"The crownless again shall be king"
 
 # num.partitions value = 4
+confluent kafka topic create --partitions 4 poems_4
+
+# Produce data to the topics using the produce command and --parse-key flag and then enter the strings:
 confluent kafka topic produce poems_4 --parse-key
 
 	1:”All that is gold does not glitter”
