@@ -1,9 +1,9 @@
 # Kafka 101
 
 --------------------------------------------------------------
-## NOTE: Begin by setting up an account with Confluent Cloud.
+### NOTE: Begin by setting up an account with Confluent Cloud.
 
-### Signup
+#### Signup
 
 Please use following details to signup with Confluent Cloud and learn kafka 101 with labs.
 
