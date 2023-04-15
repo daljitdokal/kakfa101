@@ -67,17 +67,17 @@ confluent kafka cluster use {ID}
 confluent api-key create --resource {ID}
 confluent api-key use {API Key} --resource {ID}
 
-# Produce and Consume Using the Confluent CLI
+```
+## Produce and Consumer Using the Confluent CLI
+
+### Terminal 1 - Consumer
+
+```
 confluent kafka topic list
-```
-
-### Terminal 1
-
-```
 confluent kafka topic consume --from-beginning poems
 ```
 
-### Terminal 2
+### Terminal 2 - Producer
 
 ```
 confluent kafka topic produce poems --parse-key
