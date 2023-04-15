@@ -73,3 +73,36 @@ KafkaConsumer manages connection pooling and the network protocol just like Kafk
 
 Also, consumers need to be able to handle the scenario in which the rate of message consumption from a topic combined with the computational cost of processing a single message are together too high for a single instance of the application to keep up. That is, consumers need to scale. In Kafka, scaling consumer groups is more or less automatic.
 
+## Kafka Connect
+
+In the world of information storage and retrieval, some systems are not Apache Kafka. Sometimes you would like the data in those other systems to get into Kafka topics, and sometimes you would like data in Kafka topics to get into those systems. As Apache Kafka's integration API, this is exactly what Kafka Connect does.
+
+#### What Does Kafka Connect Do?
+
+On the one hand, Kafka Connect is an ecosystem of pluggable connectors, and on the other, a client application. As a client application, Connect is a server process that runs on hardware independent of the Kafka brokers themselves. It is scalable and fault-tolerant, meaning you can run not just one single Connect worker but a cluster of Connect workers that share the load of moving data in and out of Kafka from and to external systems. Kafka Connect also abstracts the business of code away from the user and instead requires only JSON configuration to run. For example, here’s how you’d stream data from Kafka to Elasticsearch:
+
+```
+{
+    "connector.class": "io.confluent.connect.elasticsearch.ElasticsearchSinkConnector",
+    "topics"         : "my_topic",
+    "connection.url" : "http://elasticsearch:9200",
+    "type.name"      : "_doc",
+    "key.ignore"     : "true",
+    "schema.ignore"  : "true"
+}
+```
+
+### How Kafka Connect Works
+
+A Connect worker runs one or more connectors. A connector is a pluggable component that is responsible for interfacing with the external system. A source connector reads data from an external system and produces it to a Kafka topic. A sink connector subscribes to one or more Kafka topics and writes the messages it reads to an external system. Each connector is either a source or a sink connector, but it is worthwhile to remember that the Kafka cluster only sees a producer or a consumer in either case. Everything that is not a broker is a producer or a consumer.
+
+### Benefits of Kafka Connect
+
+One of the primary advantages of Kafka Connect is its large ecosystem of connectors. Writing the code that moves data to a cloud blob store, or writes to Elasticsearch, or inserts records into a relational database is code that is unlikely to vary from one business to the next. Likewise, reading from a relational database, Salesforce, or a legacy HDFS filesystem is the same operation no matter what sort of application does it. You can definitely write this code, but spending your time doing that doesn’t add any kind of unique value to your customers or make your business more uniquely competitive.
+
+All of these are examples of Kafka connectors available in the Confluent Hub, a curated collection of connectors of all sorts and most importantly, all licenses and levels of support. Some are commercially licensed and some can be used for free. Confluent Hub lets you search for source and sink connectors of all kinds and clearly shows the license of each connector. Of course, connectors need not come from the Hub and can be found on GitHub or elsewhere in the marketplace. And if after all that you still can’t find a connector that does what you need, you can write your own using a fairly simple API.
+
+Now, it might seem straightforward to build this kind of functionality on your own: If an external source system is easy to read from, it would be easy enough to read from it and produce to a destination topic. If an external sink system is easy to write to, it would again be easy enough to consume from a topic and write to that system. But any number of complexities arise, including how to handle failover, horizontally scale, manage commonplace transformation operations on inbound or outbound data, distribute common connector code, configure and operate this through a standard interface, and more.
+
+Connect seems deceptively simple on its surface, but it is in fact a complex distributed system and plugin ecosystem in its own right. And if that plugin ecosystem happens not to have what you need, the open-source Connect framework makes it simple to build your own connector and inherit all the scalability and fault tolerance properties Connect offers.
+
