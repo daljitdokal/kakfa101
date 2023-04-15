@@ -8,6 +8,7 @@ In order to make complete sense of what Kafka does, we'll delve into what an "ev
 
 
 ### What Are Events?
+
 An event is any type of action, incident, or change that's identified or recorded by software or applications. For example, a payment, a website click, or a temperature reading, along with a description of what happened.
 
 In other words, an event is a combination of notification—the element of when-ness that can be used to trigger some other activity—and state. That state is usually fairly small, say less than a megabyte or so, and is normally represented in some structured format, say in JSON or an object serialized with Apache Avro™ or Protocol Buffers.
@@ -24,6 +25,7 @@ Keys can also be complex domain objects but are often primitive types like strin
 This may not sound so significant now, but we’ll see later on that keys are crucial for how Kafka deals with things like parallelization and data locality.
 
 ### Kafka Topics
+
 Events have a tendency to proliferate—just think of the events that happened to you this morning—so we’ll need a system for organizing them. Apache Kafka's most fundamental unit of organization is the topic, which is something like a table in a relational database. As a developer using Kafka, the topic is the abstraction you probably think the most about. You create different topics to hold different kinds of events and different topics to hold filtered and transformed versions of the same kind of event.
 
 A topic is a log of events. Logs are easy to understand, because they are simple data structures with well-known semantics. First, they are append only: When you write a new message into a log, it always goes on the end. Second, they can only be read by seeking an arbitrary offset in the log, then by scanning sequential log entries. Third, events in the log are immutable—once something has happened, it is exceedingly difficult to make it un-happen. The simple semantics of a log make it feasible for Kafka to deliver high levels of sustained throughput in and out of topics, and also make it easier to reason about the replication of topics, which we’ll cover more later.
@@ -50,3 +52,24 @@ For example, if you are producing events that are all associated with the same c
 ### Kafka Brokers
 
 So far we have talked about events, topics, and partitions, but as of yet, we have not been too explicit about the actual computers in the picture. From a physical infrastructure standpoint, Apache Kafka is composed of a network of machines called brokers. In a contemporary deployment, these may not be separate physical servers but containers running on pods running on virtualized servers running on actual processors in a physical datacenter somewhere. However they are deployed, they are independent machines each running the Kafka broker process. Each broker hosts some set of partitions and handles incoming requests to write new events to those partitions or read events from them. Brokers also handle replication of partitions between each other.
+
+### Replication
+
+It would not do if we stored each partition on only one broker. Whether brokers are bare metal servers or managed containers, they and their underlying storage are susceptible to failure, so we need to copy partition data to several other brokers to keep it safe. Those copies are called follower replicas, whereas the main partition is called the leader replica. When you produce data to the leader—in general, reading and writing are done to the leader—the leader and the followers work together to replicate those new writes to the followers.
+
+This happens automatically, and while you can tune some settings in the producer to produce varying levels of durability guarantees, this is not usually a process you have to think about as a developer building systems on Kafka. All you really need to know as a developer is that your data is safe, and that if one node in the cluster dies, another will take over its role.
+
+### Kafka Producers
+
+The API surface of the producer library is fairly lightweight: In Java, there is a class called KafkaProducer that you use to connect to the cluster. You give this class a map of configuration parameters, including the address of some brokers in the cluster, any appropriate security configuration, and other settings that determine the network behavior of the producer. There is another class called ProducerRecord that you use to hold the key-value pair you want to send to the cluster.
+
+To a first-order approximation, this is all the API surface area there is to producing messages. Under the covers, the library is managing connection pools, network buffering, waiting for brokers to acknowledge messages, retransmitting messages when necessary, and a host of other details no application programmer need concern herself with.
+
+### Kafka Consumers
+
+Using the consumer API is similar in principle to the producer. You use a class called KafkaConsumer to connect to the cluster (passing a configuration map to specify the address of the cluster, security, and other parameters). Then you use that connection to subscribe to one or more topics. When messages are available on those topics, they come back in a collection called ConsumerRecords, which contains individual instances of messages in the form of ConsumerRecord objects. A ConsumerRecord object represents the key/value pair of a single Apache Kafka message.
+
+KafkaConsumer manages connection pooling and the network protocol just like KafkaProducer does, but there is a much bigger story on the read side than just the network plumbing. First of all, Kafka is different from legacy message queues in that reading a message does not destroy it; it is still there to be read by any other consumer that might be interested in it. In fact, it’s perfectly normal in Kafka for many consumers to read from one topic. This one small fact has a positively disproportionate impact on the kinds of software architectures that emerge around Kafka, which is a topic covered very well elsewhere.
+
+Also, consumers need to be able to handle the scenario in which the rate of message consumption from a topic combined with the computational cost of processing a single message are together too high for a single instance of the application to keep up. That is, consumers need to scale. In Kafka, scaling consumer groups is more or less automatic.
+
