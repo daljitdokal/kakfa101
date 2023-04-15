@@ -41,7 +41,9 @@ This may not sound so significant now, but we’ll see later on that keys are cr
 
 --------------------------
 
-### Labs
+### KAFKA 101
+
+https://developer.confluent.io/learn-kafka/apache-kafka/events/
 
 ```
  - Create Cluster
