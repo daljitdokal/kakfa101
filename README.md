@@ -1,7 +1,7 @@
 # Kafka 101
 
 --------------------------------------------------------------
-## NOTE: Begin by setting up Confluent Cloud.
+## NOTE: Begin by setting up an account with Confluent Cloud.
 
 ### Signup
 
@@ -74,9 +74,9 @@ confluent kafka topic list
 ### Terminal 1
 
 ```
-# Terminal 1
 confluent kafka topic consume --from-beginning poems
 ```
+
 ### Terminal 2
 
 ```
@@ -86,14 +86,12 @@ confluent kafka topic produce poems --parse-key
 When prompted, enter the following strings as written:
 
 ```
-	4:"Message from DJ"
- 5:"From the ashes a fire shall awaken"
-	6:"A light from the shadows shall spring"
-	7:"Renewed shall be blad that was broken"
-	8:"The crownless again shall be king"
+4:"Message from DJ"
+5:"From the ashes a fire shall awaken"
+6:"A light from the shadows shall spring"
+7:"Renewed shall be blad that was broken"
+8:"The crownless again shall be king"
 ```
 
 Observe the messages as they’re being output in the consumer terminal window.
-
-
 
